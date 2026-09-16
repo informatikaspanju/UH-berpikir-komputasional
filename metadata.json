@@ -1,0 +1,6 @@
+{
+  "name": "CBT Informatika SMP - Berpikir Komputasional",
+  "description": "Aplikasi Ujian Online Anti-Curang CBT Google Apps Script untuk Ulangan Harian Informatika Kelas 7 SMP materi Berpikir Komputasional, dilengkapi generator kode Code.gs dan Index.html.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
