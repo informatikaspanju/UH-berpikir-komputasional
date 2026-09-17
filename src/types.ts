@@ -86,6 +86,19 @@ export interface ExamSession {
   cheatDetails?: string;
 }
 
+export interface ExamRecord {
+  id: string;
+  timestamp: string;
+  studentName: string;
+  studentClass: string;
+  studentAttendanceNo: string;
+  correctCount: number;
+  totalQuestions: number;
+  score: number;
+  cheatStatus: string;
+  hasCheated: boolean;
+}
+
 export interface SpreadsheetConfig {
   sheetUrl: string;
   spreadsheetId: string;

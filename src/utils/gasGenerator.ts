@@ -775,19 +775,22 @@ export function generateIndexHtml(config: {
     </div>
   </div>
 
-  <!-- 4. HALAMAN HASIL / NILAI AKHIR -->
+  <!-- 4. HALAMAN NOTIFIKASI SELESAI SISWA (TANPA REKAP NILAI) -->
   <div id="view-result" class="container hidden">
-    <div class="card" style="max-width: 600px; margin: 40px auto; text-align: center;">
+    <div class="card" style="max-width: 580px; margin: 40px auto; text-align: center;">
       <div id="result-icon-box" style="width: 72px; height: 72px; border-radius: 50%; background: #dcfce7; color: #16a34a; font-size: 32px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
         ✓
       </div>
-      <h2 id="result-title" style="font-size: 22px; font-weight: 800; color: #0f172a;">Ujian Selesai!</h2>
-      <p id="result-subtitle" style="font-size: 14px; color: var(--text-muted); margin-top: 4px;">Hasil evaluasi ulangan harian Anda langsung keluar secara instan.</p>
+      <h2 id="result-title" style="font-size: 22px; font-weight: 800; color: #0f172a;">Ulangan Harian Telah Selesai</h2>
+      <p id="result-subtitle" style="font-size: 14px; color: var(--text-muted); margin-top: 4px;">Terima kasih telah mengerjakan ujian dengan tertib dan jujur.</p>
 
-      <div style="margin: 24px 0; padding: 20px; background: #f8fafc; border-radius: 14px; border: 1px solid var(--border);">
-        <div style="font-size: 13px; color: #64748b; margin-bottom: 4px;">NILAI AKHIR ANDA</div>
-        <div id="result-score" style="font-size: 54px; font-weight: 800; color: #2563eb; line-height: 1;">0</div>
-        <div id="result-ratio" style="font-size: 14px; font-weight: 600; color: #475569; margin-top: 8px;">Skor Benar: 0 / 30 Soal</div>
+      <div style="margin: 20px 0; padding: 18px; background: #f0fdf4; border-radius: 12px; border: 1px solid #bbf7d0; text-align: left;">
+        <div style="font-weight: 700; color: #15803d; font-size: 14px; margin-bottom: 4px; display: flex; items-center; gap: 6px;">
+          <span>✓ Status:</span> Jawaban Berhasil Terkirim ke Guru
+        </div>
+        <p style="font-size: 12px; color: #166534; margin: 0; line-height: 1.5;">
+          Sesuai ketentuan, <strong>rekap nilai ujian hanya dapat diakses oleh akun Guru / Admin</strong>. Seluruh lembar jawaban Anda telah tersimpan secara otomatis di Google Spreadsheet dan sistem evaluasi guru pengampu.
+        </p>
       </div>
 
       <div style="text-align: left; background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; font-size: 13px; margin-bottom: 20px;">
@@ -804,8 +807,8 @@ export function generateIndexHtml(config: {
           <strong>4 Pilar Berpikir Komputasional & Pengenalan Scratch</strong>
         </div>
         <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
-          <span style="color: #64748b;">Komposisi Soal:</span>
-          <strong>30 Butir (15 PG, 5 Kompleks, 5 B/S, 5 Menjodohkan)</strong>
+          <span style="color: #64748b;">Total Soal:</span>
+          <strong>30 Butir Soal</strong>
         </div>
         <div style="display: flex; justify-content: space-between; padding: 6px 0;">
           <span style="color: #64748b;">Status Kejujuran:</span>
@@ -815,6 +818,12 @@ export function generateIndexHtml(config: {
 
       <div id="submit-status-msg" style="font-size: 12px; color: #64748b; padding: 10px; background: #f1f5f9; border-radius: 8px;">
         Menyimpan ke Google Spreadsheet & Mengirim Notifikasi ke ${config.teacherEmail}...
+      </div>
+
+      <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #f1f5f9; display: flex; justify-content: center; gap: 10px;">
+        <button id="btn-admin-modal" style="background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">
+          🔒 Tombol Admin Guru (spanju2026)
+        </button>
       </div>
     </div>
   </div>
@@ -1229,12 +1238,11 @@ export function generateIndexHtml(config: {
       document.getElementById('view-result').classList.remove('hidden');
 
       document.getElementById('result-student-name').innerText = studentName + " (" + studentClass + " - #" + studentAbsen + ")";
-      document.getElementById('result-score').innerText = nilaiAkhir;
-      document.getElementById('result-ratio').innerText = "Skor Benar: " + correctCount + " dari " + total + " Soal";
 
       var cheatStatusEl = document.getElementById('result-cheat-status');
       var resultIconBox = document.getElementById('result-icon-box');
       var resultTitle = document.getElementById('result-title');
+      var resultSubtitle = document.getElementById('result-subtitle');
 
       if (cheatDetected) {
         cheatStatusEl.innerText = "DIDISKUALIFIKASI: " + cheatReason;
@@ -1243,6 +1251,7 @@ export function generateIndexHtml(config: {
         resultIconBox.style.color = "#dc2626";
         resultIconBox.innerText = "✕";
         resultTitle.innerText = "Ujian Dihentikan (Kecurangan)";
+        resultSubtitle.innerText = "Pelanggaran tata tertib ujian telah dicatat dan dilaporkan ke guru.";
       } else {
         cheatStatusEl.innerText = "Bersih (Tidak Ada Kecurangan)";
         cheatStatusEl.style.color = "#16a34a";
@@ -1263,21 +1272,33 @@ export function generateIndexHtml(config: {
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run
           .withSuccessHandler(function(res) {
-            statusMsg.innerHTML = "✅ <strong>Berhasil Tersimpan!</strong> Nilai telah direkam ke Google Spreadsheet dan notifikasi email telah terkirim ke " + TEACHER_EMAIL + ".";
+            statusMsg.innerHTML = "✅ <strong>Berhasil Terkirim!</strong> Lembar jawaban telah tersimpan di Google Spreadsheet dan notifikasi telah dikirim ke guru.";
             statusMsg.style.background = "#dcfce7";
             statusMsg.style.color = "#166534";
           })
           .withFailureHandler(function(err) {
-            statusMsg.innerHTML = "⚠️ Peringatan: Hasil lokal tersimpan, namun gagal sinkron ke Spreadsheet: " + err.message;
+            statusMsg.innerHTML = "⚠️ Peringatan: Gagal sinkron ke Spreadsheet: " + err.message;
             statusMsg.style.background = "#fef3c7";
             statusMsg.style.color = "#92400e";
           })
           .simpanHasilUjian(payload);
       } else {
-        statusMsg.innerHTML = "✅ <strong>Mode Simulasi Aktif:</strong> Nilai (" + nilaiAkhir + ") siap direkam ke Google Spreadsheet & notifikasi email siap dikirimkan ke " + TEACHER_EMAIL + ".";
+        statusMsg.innerHTML = "✅ <strong>Berhasil Dikirim:</strong> Data jawaban telah terekam dan notifikasi email siap dikirimkan ke " + TEACHER_EMAIL + ".";
         statusMsg.style.background = "#dcfce7";
         statusMsg.style.color = "#166534";
       }
+    }
+
+    var btnAdminModal = document.getElementById('btn-admin-modal');
+    if (btnAdminModal) {
+      btnAdminModal.addEventListener('click', function() {
+        var pwd = prompt("Masukkan Password Admin / Guru:");
+        if (pwd === "spanju2026") {
+          alert("AKUN ADMIN TERVERIFIKASI (spanju2026)\n\nRekapitulasi seluruh nilai siswa tercatat rapi secara real-time di Google Spreadsheet Anda (Sheet 1) dengan 6 kolom:\n1. Timestamp\n2. Nama Siswa (Kelas & No. Absen)\n3. Skor Benar\n4. Total Soal\n5. Nilai Akhir\n6. Status Kecurangan\n\nNotifikasi otomatis juga terkirim ke email: " + TEACHER_EMAIL);
+        } else if (pwd !== null) {
+          alert("Password Admin Salah! Hubungi guru pengampu jika Anda berhak mengakses.");
+        }
+      });
     }
   </script>
 </body>

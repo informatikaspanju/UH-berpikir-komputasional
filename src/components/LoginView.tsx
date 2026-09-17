@@ -5,6 +5,7 @@ import { StudentIdentity } from '../types';
 interface LoginViewProps {
   onLoginSuccess: (identity: StudentIdentity) => void;
   expectedPassword?: string;
+  onOpenAdminLogin?: () => void;
 }
 
 const CLASS_OPTIONS = [
@@ -13,7 +14,8 @@ const CLASS_OPTIONS = [
 
 export const LoginView: React.FC<LoginViewProps> = ({
   onLoginSuccess,
-  expectedPassword = '1234'
+  expectedPassword = '1234',
+  onOpenAdminLogin
 }) => {
   const [studentName, setStudentName] = useState('');
   const [studentClass, setStudentClass] = useState('7A');
@@ -260,9 +262,21 @@ export const LoginView: React.FC<LoginViewProps> = ({
           </div>
         </div>
 
-        {/* Footer info */}
-        <div className="mt-4 text-center text-[11px] text-slate-400">
-          Sistem Pengawasan Otomatis Terkunci Layar Penuh
+        {/* Footer info & Admin login button */}
+        <div className="mt-4 pt-3 border-t border-slate-100 flex flex-col items-center gap-2">
+          {onOpenAdminLogin && (
+            <button
+              type="button"
+              onClick={onOpenAdminLogin}
+              className="text-xs font-bold text-slate-600 hover:text-blue-700 bg-slate-100 hover:bg-blue-50 px-3.5 py-1.5 rounded-lg border border-slate-200 transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <Lock className="w-3.5 h-3.5 text-blue-600" />
+              <span>Tombol Admin Guru (spanju2026)</span>
+            </button>
+          )}
+          <span className="text-[11px] text-slate-400">
+            Sistem Pengawasan Otomatis Terkunci Layar Penuh
+          </span>
         </div>
       </div>
     </div>

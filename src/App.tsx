@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { LoginView } from './components/LoginView';
 import { InstructionsView } from './components/InstructionsView';
@@ -6,12 +6,43 @@ import { ExamView } from './components/ExamView';
 import { ResultView } from './components/ResultView';
 import { GasGeneratorView } from './components/GasGeneratorView';
 import { QuestionBankView } from './components/QuestionBankView';
+import { AdminRekapView } from './components/AdminRekapView';
+import { AdminLoginModal } from './components/AdminLoginModal';
 import { QUESTIONS_BANK } from './data/questions';
-import { ExamStep, ExamSession, Question, StudentAnswerValue, StudentIdentity } from './types';
+import { INITIAL_EXAM_RECORDS } from './data/mockRecords';
+import { ExamStep, ExamSession, Question, StudentAnswerValue, StudentIdentity, ExamRecord } from './types';
+
+const STORAGE_KEY = 'cbt_exam_records_v1';
 
 export default function App() {
   // Navigation Tabs
-  const [activeTab, setActiveTab] = useState<'simulation' | 'generator' | 'questions'>('simulation');
+  const [activeTab, setActiveTab] = useState<'simulation' | 'generator' | 'questions' | 'admin'>('simulation');
+
+  // Admin Authentication State
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState<boolean>(false);
+
+  // Rekap Nilai Keseluruhan (Persisten via LocalStorage)
+  const [examRecords, setExamRecords] = useState<ExamRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch {
+      // Fallback
+    }
+    return INITIAL_EXAM_RECORDS;
+  });
+
+  // Sinkronisasi ke LocalStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(examRecords));
+    } catch {
+      // Abaikan jika kuota storage penuh
+    }
+  }, [examRecords]);
 
   // CBT Simulation State
   const [examStep, setExamStep] = useState<ExamStep>('login');
@@ -27,7 +58,7 @@ export default function App() {
   const [teacherEmail] = useState('informatikaspanju2026@gmail.com');
   const [sheetUrl] = useState('');
 
-  // 1. Shuffling Questions per Student (Ketentuan: "Soal tampil secara acak untuk masing-masing siswa.")
+  // 1. Shuffling Questions per Student
   const shuffleQuestions = (items: Question[]): Question[] => {
     const array = [...items];
     for (let i = array.length - 1; i > 0; i--) {
@@ -60,6 +91,15 @@ export default function App() {
   };
 
   const handleCheatBeforeStart = (reason: string) => {
+    const timestampStr = new Date().toLocaleString('id-ID', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }) + ' WIB';
+
     // Siswa mencoba mulai ujian dengan layar sudah terbelah
     const session: ExamSession = {
       studentName: studentIdentity.name || 'Siswa',
@@ -78,6 +118,22 @@ export default function App() {
       hasCheated: true,
       cheatDetails: reason
     };
+
+    // Rekam ke daftar rekap admin
+    const newRecord: ExamRecord = {
+      id: 'rec-' + Date.now(),
+      timestamp: timestampStr,
+      studentName: session.studentName,
+      studentClass: session.studentClass,
+      studentAttendanceNo: session.studentAttendanceNo,
+      correctCount: 0,
+      totalQuestions: QUESTIONS_BANK.length,
+      score: 0,
+      cheatStatus: session.cheatStatus,
+      hasCheated: true
+    };
+    setExamRecords((prev) => [newRecord, ...prev]);
+
     setExamSession(session);
     setExamStep('result');
   };
@@ -135,6 +191,15 @@ export default function App() {
     const isCheated = cheatStatus !== 'Bersih (Tidak Ada Kecurangan)';
     const score = Math.round((correct / total) * 100);
 
+    const timestampStr = new Date().toLocaleString('id-ID', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }) + ' WIB';
+
     const session: ExamSession = {
       studentName: studentIdentity.name || 'Siswa',
       studentClass: studentIdentity.className || '7A',
@@ -152,6 +217,21 @@ export default function App() {
       hasCheated: isCheated,
       cheatDetails: isCheated ? cheatStatus : undefined
     };
+
+    // Rekam ke daftar rekap admin (persisten)
+    const newRecord: ExamRecord = {
+      id: 'rec-' + Date.now(),
+      timestamp: timestampStr,
+      studentName: session.studentName,
+      studentClass: session.studentClass,
+      studentAttendanceNo: session.studentAttendanceNo,
+      correctCount: correct,
+      totalQuestions: total,
+      score: score,
+      cheatStatus: session.cheatStatus,
+      hasCheated: isCheated
+    };
+    setExamRecords((prev) => [newRecord, ...prev]);
 
     setExamSession(session);
     setExamStep('result');
@@ -177,6 +257,18 @@ export default function App() {
     setExamStep('login');
   };
 
+  // Admin Actions
+  const handleAdminLoginSuccess = () => {
+    setIsAdminLoggedIn(true);
+    setIsAdminModalOpen(false);
+    setActiveTab('admin');
+  };
+
+  const handleLogoutAdmin = () => {
+    setIsAdminLoggedIn(false);
+    setActiveTab('simulation');
+  };
+
   const isExamRunning = activeTab === 'simulation' && examStep === 'exam';
 
   return (
@@ -186,6 +278,9 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         isExamRunning={isExamRunning}
+        isAdminLoggedIn={isAdminLoggedIn}
+        onOpenAdminLogin={() => setIsAdminModalOpen(true)}
+        onLogoutAdmin={handleLogoutAdmin}
       />
 
       {/* Main Content Areas */}
@@ -196,6 +291,7 @@ export default function App() {
               <LoginView
                 onLoginSuccess={handleLoginSuccess}
                 expectedPassword="1234"
+                onOpenAdminLogin={() => setIsAdminModalOpen(true)}
               />
             )}
 
@@ -225,10 +321,22 @@ export default function App() {
                 session={examSession}
                 teacherEmail={teacherEmail}
                 onRestart={handleRestartExam}
-                onOpenGenerator={() => setActiveTab('generator')}
+                onOpenAdminLogin={() => setIsAdminModalOpen(true)}
               />
             )}
           </div>
+        )}
+
+        {/* Tab Rekapitulasi Nilai Keseluruhan (Admin Dashboard) */}
+        {activeTab === 'admin' && (
+          <AdminRekapView
+            records={examRecords}
+            onClearRecords={() => setExamRecords([])}
+            onResetToDemo={() => setExamRecords(INITIAL_EXAM_RECORDS)}
+            onLogoutAdmin={handleLogoutAdmin}
+            onOpenGenerator={() => setActiveTab('generator')}
+            teacherEmail={teacherEmail}
+          />
         )}
 
         {activeTab === 'generator' && (
@@ -243,6 +351,13 @@ export default function App() {
         )}
       </main>
 
+      {/* Admin Login Modal (password: spanju2026) */}
+      <AdminLoginModal
+        isOpen={isAdminModalOpen}
+        onClose={() => setIsAdminModalOpen(false)}
+        onSuccess={handleAdminLoginSuccess}
+      />
+
       {/* Persistent Footer (hidden during active exam) */}
       {!isExamRunning && (
         <footer className="bg-white border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-500 mt-auto">
@@ -250,9 +365,16 @@ export default function App() {
             <p>
               © 2026 CBT Informatika SMP Kelas 7 • 4 Pilar Berpikir Komputasional & Pengenalan Scratch
             </p>
-            <p className="text-slate-400">
-              Integrasi Google Apps Script, Google Spreadsheet & Notifikasi Email ({teacherEmail})
-            </p>
+            <div className="flex items-center gap-3 text-slate-400">
+              <span>Guru: {teacherEmail}</span>
+              <span>•</span>
+              <button
+                onClick={() => setIsAdminModalOpen(true)}
+                className="text-blue-600 hover:text-blue-800 font-semibold"
+              >
+                Akses Admin (spanju2026)
+              </button>
+            </div>
           </div>
         </footer>
       )}
