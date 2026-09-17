@@ -7,7 +7,7 @@ import { ResultView } from './components/ResultView';
 import { GasGeneratorView } from './components/GasGeneratorView';
 import { QuestionBankView } from './components/QuestionBankView';
 import { QUESTIONS_BANK } from './data/questions';
-import { ExamStep, ExamSession, Question } from './types';
+import { ExamStep, ExamSession, Question, StudentAnswerValue } from './types';
 
 export default function App() {
   // Navigation Tabs
@@ -76,14 +76,51 @@ export default function App() {
     setExamStep('result');
   };
 
+  const checkAnswerCorrectness = (q: Question, userAns: StudentAnswerValue | undefined): boolean => {
+    if (!userAns) return false;
+
+    if (q.type === 'single') {
+      return userAns === q.correctAnswer;
+    }
+
+    if (q.type === 'complex') {
+      if (!Array.isArray(userAns)) return false;
+      const correct = q.correctComplexAnswers || [];
+      if (userAns.length !== correct.length) return false;
+      const sortedUser = [...userAns].sort();
+      const sortedCorrect = [...correct].sort();
+      return JSON.stringify(sortedUser) === JSON.stringify(sortedCorrect);
+    }
+
+    if (q.type === 'true_false') {
+      const items = q.trueFalseItems || [];
+      const ansMap = userAns as Record<string, boolean>;
+      for (const item of items) {
+        if (ansMap[item.id] !== item.correctAnswer) return false;
+      }
+      return true;
+    }
+
+    if (q.type === 'matching') {
+      const premises = q.matchingPremises || [];
+      const ansMap = userAns as Record<string, string>;
+      for (const premise of premises) {
+        if (ansMap[premise.id] !== premise.correctMatchId) return false;
+      }
+      return true;
+    }
+
+    return false;
+  };
+
   const handleFinishExam = (
-    answers: Record<number, 'A' | 'B' | 'C' | 'D'>,
+    answers: Record<number, StudentAnswerValue>,
     cheatStatus: string
   ) => {
     // Hitung skor benar
     let correct = 0;
     QUESTIONS_BANK.forEach((q) => {
-      if (answers[q.id] === q.correctAnswer) {
+      if (checkAnswerCorrectness(q, answers[q.id])) {
         correct++;
       }
     });
@@ -195,7 +232,7 @@ export default function App() {
         <footer className="bg-white border-t border-slate-200 py-6 px-4 text-center text-xs text-slate-500 mt-auto">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
             <p>
-              © 2026 CBT Informatika SMP Kelas 7 • Materi Berpikir Komputasional
+              © 2026 CBT Informatika SMP Kelas 7 • 4 Pilar Berpikir Komputasional & Pengenalan Scratch
             </p>
             <p className="text-slate-400">
               Integrasi Google Apps Script, Google Spreadsheet & Notifikasi Email ({teacherEmail})

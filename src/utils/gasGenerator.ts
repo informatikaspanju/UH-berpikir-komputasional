@@ -22,12 +22,14 @@ export function generateCodeGs(config: {
 
   return `/**
  * ============================================================================
- * ULANGAN HARIAN INFORMATIKA - BERPIKIR KOMPUTASIONAL KELAS 7 SMP
+ * ULANGAN HARIAN INFORMATIKA - KELAS 7 SMP
+ * MATERI: 4 PILAR BERPIKIR KOMPUTASIONAL & PENGENALAN APLIKASI SCRATCH
  * SISTEM CBT ANTI-CURANG GOOGLE APPS SCRIPT
  * ============================================================================
  * Sekolah   : SMP
  * Mapel     : INFORMATIKA
- * Materi    : Berpikir Komputasional (Kurikulum Merdeka)
+ * Materi    : 4 Pilar Berpikir Komputasional & Pengenalan Scratch (Kurikulum Merdeka)
+ * Rincian   : 30 Soal (15 PG Tunggal, 5 PG Kompleks, 5 Benar/Salah, 5 Menjodohkan)
  * Durasi    : ${config.examDurationMinutes} Menit
  * Password  : ${config.passwordRequired}
  * Sheet     : ${config.sheetName}
@@ -37,14 +39,13 @@ export function generateCodeGs(config: {
 
 // KONFIGURASI UTAMA
 var CONFIG = {
-  // Ganti dengan Spreadsheet ID Anda jika belum sesuai
   SPREADSHEET_ID: "${cleanId}",
   SHEET_NAME: "${config.sheetName}",
   EMAIL_NOTIFIKASI: "${config.teacherEmail}",
   PASSWORD_UJIAN: "${config.passwordRequired}",
   DURASI_MENIT: ${config.examDurationMinutes},
   MAPEL: "INFORMATIKA",
-  MATERI: "Berpikir Komputasional Kelas 7 SMP"
+  MATERI: "4 Pilar Berpikir Komputasional & Pengenalan Scratch Kelas 7 SMP"
 };
 
 /**
@@ -52,7 +53,7 @@ var CONFIG = {
  */
 function doGet(e) {
   return HtmlService.createHtmlOutputFromFile('Index')
-    .setTitle('CBT Informatika Kelas 7 - Berpikir Komputasional')
+    .setTitle('CBT Informatika Kelas 7 - Berpikir Komputasional & Scratch')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no');
 }
@@ -97,7 +98,6 @@ function simpanHasilUjian(data) {
     
     var sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
     if (!sheet) {
-      // Jika sheet belum ada, buat baru
       sheet = ss.insertSheet(CONFIG.SHEET_NAME);
     }
 
@@ -111,7 +111,6 @@ function simpanHasilUjian(data) {
         "Nilai Akhir",
         "Status Kecurangan"
       ]);
-      // Format header
       var headerRange = sheet.getRange(1, 1, 1, 6);
       headerRange.setBackground("#1e293b");
       headerRange.setFontColor("#ffffff");
@@ -137,7 +136,6 @@ function simpanHasilUjian(data) {
       statusKecurangan
     ]);
 
-    // Berikan warna khusus jika terdeteksi kecurangan
     var lastRow = sheet.getLastRow();
     if (statusKecurangan !== "Bersih (Tidak Ada Kecurangan)") {
       sheet.getRange(lastRow, 6).setBackground("#fee2e2").setFontColor("#b91c1c").setFontWeight("bold");
@@ -184,7 +182,7 @@ function kirimEmailNotifikasi(data) {
       "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;'>" +
       "  <div style='background-color: " + (isCurang ? "#b91c1c" : "#1e40af") + "; color: #ffffff; padding: 18px 24px;'>" +
       "    <h2 style='margin: 0; font-size: 20px;'>Laporan Hasil Ulangan Harian Informatika</h2>" +
-      "    <p style='margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;'>Materi: " + CONFIG.MATERI + "</p>" +
+      "    <p style='margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;'>Materi: " + CONFIG.MATERI + " (30 Soal)</p>" +
       "  </div>" +
       "  <div style='padding: 24px; background-color: #ffffff; color: #334155; line-height: 1.6;'>" +
       "    <table style='width: 100%; border-collapse: collapse; font-size: 14px;'>" +
@@ -225,7 +223,7 @@ function kirimEmailNotifikasi(data) {
   }
 }
 
-// BANK SOAL DARI WORD (MATERI BERPIKIR KOMPUTASIONAL KELAS 7 SMP)
+// BANK SOAL 30 BUTIR (15 PG TUNGGAL, 5 PG KOMPLEKS, 5 BENAR/SALAH, 5 MENJODOHKAN)
 var BANK_SOAL = ${questionsJson};
 `;
 }
@@ -242,7 +240,7 @@ export function generateIndexHtml(config: {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Ulangan Harian Informatika Kelas 7 - Berpikir Komputasional</title>
+  <title>Ulangan Harian Informatika Kelas 7 - Berpikir Komputasional & Scratch (30 Soal)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -415,6 +413,16 @@ export function generateIndexHtml(config: {
       font-weight: 600;
       margin-bottom: 12px;
     }
+    .soal-type-tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 11px;
+      font-weight: 700;
+      margin-left: 6px;
+    }
     .soal-context {
       background: #f8fafc;
       border-left: 4px solid var(--primary);
@@ -478,21 +486,76 @@ export function generateIndexHtml(config: {
       color: #1e293b;
       padding-top: 4px;
     }
+    /* TRUE FALSE ROW */
+    .tf-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .tf-table th, .tf-table td {
+      padding: 12px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .tf-table th {
+      background: #f8fafc;
+      text-align: center;
+    }
+    .tf-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      cursor: pointer;
+      margin: 0 4px;
+    }
+    .tf-btn.active-true {
+      background: #16a34a;
+      color: #fff;
+      border-color: #16a34a;
+    }
+    .tf-btn.active-false {
+      background: #dc2626;
+      color: #fff;
+      border-color: #dc2626;
+    }
+    /* MATCHING ROW */
+    .match-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 12px;
+      background: #f8fafc;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+    }
+    .match-select {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      font-size: 13px;
+      background: #ffffff;
+      outline: none;
+    }
     /* PALET NOMOR */
     .palette-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
-      gap: 8px;
+      grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+      gap: 6px;
       margin-top: 16px;
     }
     .palette-btn {
-      height: 38px;
+      height: 36px;
       border-radius: 8px;
       border: 1px solid var(--border);
       background: #ffffff;
       color: #334155;
       font-weight: 600;
-      font-size: 13px;
+      font-size: 12px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -523,7 +586,6 @@ export function generateIndexHtml(config: {
     .hidden {
       display: none !important;
     }
-    /* MOBILE TWEAKS */
     @media (max-width: 640px) {
       .card {
         padding: 18px;
@@ -551,7 +613,7 @@ export function generateIndexHtml(config: {
           INF
         </div>
         <h2 style="font-size: 20px; font-weight: 800; color: #0f172a;">ULANGAN HARIAN INFORMATIKA</h2>
-        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Berpikir Komputasional • Kelas 7 SMP</p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">4 Pilar Berpikir Komputasional & Scratch • 30 Soal • Kelas 7 SMP</p>
       </div>
 
       <div class="form-group">
@@ -565,7 +627,6 @@ export function generateIndexHtml(config: {
         <p id="password-hint" style="font-size: 11px; color: #94a3b8; margin-top: 4px;">*Tombol login akan muncul otomatis setelah password (1234) dimasukkan dengan benar.</p>
       </div>
 
-      <!-- Tombol login: awalnya tidak ditampilkan (hidden) sampai password 1234 & nama diisi -->
       <div id="login-action-container" class="hidden" style="margin-top: 20px;">
         <button id="btn-login" class="btn btn-primary" style="width: 100%; padding: 14px;">
           Masuk ke Ruang Ujian
@@ -593,12 +654,20 @@ export function generateIndexHtml(config: {
 
       <div style="font-size: 14px; line-height: 1.7; color: #334155; margin-bottom: 24px;">
         <ol style="padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
-          <li>Durasi pengerjaan adalah <strong>60 Menit</strong> untuk 20 butir soal berpikir komputasional.</li>
-          <li>Urutan soal dan pilihan jawaban diacak secara otomatis untuk setiap siswa.</li>
+          <li>Materi ujian: <strong>4 Pilar Berpikir Komputasional (Dekomposisi, Abstraksi, Pengenalan Pola, Algoritma) & Pengenalan Aplikasi Scratch</strong>.</li>
+          <li>Durasi pengerjaan adalah <strong>60 Menit</strong> untuk <strong>30 butir soal</strong> yang terdiri atas:
+            <ul style="padding-left: 18px; margin-top: 4px; font-size: 13px;">
+              <li>15 Soal Pilihan Ganda Tunggal (Pilih 1 jawaban A, B, C, atau D)</li>
+              <li>5 Soal Pilihan Ganda Kompleks (Centang kotak lebih dari 1 jawaban benar)</li>
+              <li>5 Soal Benar / Salah (Tentukan Benar atau Salah per pernyataan)</li>
+              <li>5 Soal Menjodohkan (Pasangkan istilah di kiri dengan pernyataan di kanan)</li>
+            </ul>
+          </li>
+          <li>Urutan soal diacak secara otomatis untuk setiap siswa.</li>
           <li><strong>Dilarang keras membelah layar (Split Screen)</strong> di HP Android, iPhone, maupun Laptop. Layar terbelah akan langsung membatalkan ujian.</li>
           <li><strong>Dilarang beralih ke aplikasi lain</strong>, membuka browser lain, atau berpindah tab.</li>
           <li>Saat tombol "Mulai Ujian" ditekan, layar akan otomatis dikunci ke mode Layar Penuh (Fullscreen).</li>
-          <li>Nilai akhir akan langsung muncul seketika setelah ujian selesai dan terkirim otomatis ke email guru serta Google Spreadsheet.</li>
+          <li>Nilai akhir langsung keluar seketika dan terkirim otomatis ke email guru serta Google Spreadsheet.</li>
         </ol>
       </div>
 
@@ -612,12 +681,11 @@ export function generateIndexHtml(config: {
 
   <!-- 3. HALAMAN UJIAN UTAMA -->
   <div id="view-exam" class="hidden">
-    <!-- Header Ujian -->
     <header class="exam-header">
       <div class="header-content">
         <div class="header-left">
-          <h1>INFORMATIKA • BERPIKIR KOMPUTASIONAL KELAS 7</h1>
-          <p>Siswa: <span id="header-student-name" style="font-weight: 600; color: #0f172a;">-</span> | Soal <span id="header-current-num">1</span> dari <span id="header-total-num">20</span></p>
+          <h1>INFORMATIKA • BERPIKIR KOMPUTASIONAL & SCRATCH</h1>
+          <p>Siswa: <span id="header-student-name" style="font-weight: 600; color: #0f172a;">-</span> | Soal <span id="header-current-num">1</span> dari <span id="header-total-num">30</span></p>
         </div>
         <div id="timer-box" class="timer-badge">
           <span>⏱️ Sisa Waktu:</span>
@@ -627,23 +695,22 @@ export function generateIndexHtml(config: {
     </header>
 
     <div class="container">
-      <!-- Card Soal 1 Soal 1 Halaman -->
       <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <span id="question-topic" class="soal-tag">Topik</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 6px;">
+          <div>
+            <span id="question-topic" class="soal-tag">Topik</span>
+            <span id="question-type-badge" class="soal-type-tag">Tipe Soal</span>
+          </div>
           <span style="font-size: 13px; font-weight: 600; color: #64748b;">Nomor <span id="q-index-badge">1</span></span>
         </div>
 
-        <!-- Teks pengantar / cerita dari Word -->
         <div id="question-context" class="soal-context"></div>
-
-        <!-- Pertanyaan -->
         <div id="question-title" class="soal-text"></div>
 
-        <!-- Pilihan A, B, C, D -->
+        <!-- Wadah Opsi Dinamis -->
         <div id="options-container"></div>
 
-        <!-- Tombol Navigasi Sebelumnya & Berikutnya -->
+        <!-- Tombol Navigasi -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 10px;">
           <button id="btn-prev" class="btn btn-secondary">
             ← Sebelumnya
@@ -660,9 +727,9 @@ export function generateIndexHtml(config: {
         </div>
       </div>
 
-      <!-- Palet Nomor Soal -->
+      <!-- Palet Nomor Soal (30 Soal) -->
       <div class="card" style="margin-top: 16px;">
-        <h4 style="font-size: 13px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;">Daftar Nomor Soal</h4>
+        <h4 style="font-size: 13px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;">Daftar Nomor Soal (30 Butir)</h4>
         <div id="palette-container" class="palette-grid"></div>
       </div>
     </div>
@@ -680,7 +747,7 @@ export function generateIndexHtml(config: {
       <div style="margin: 24px 0; padding: 20px; background: #f8fafc; border-radius: 14px; border: 1px solid var(--border);">
         <div style="font-size: 13px; color: #64748b; margin-bottom: 4px;">NILAI AKHIR ANDA</div>
         <div id="result-score" style="font-size: 54px; font-weight: 800; color: #2563eb; line-height: 1;">0</div>
-        <div id="result-ratio" style="font-size: 14px; font-weight: 600; color: #475569; margin-top: 8px;">Skor Benar: 0 / 20 Soal</div>
+        <div id="result-ratio" style="font-size: 14px; font-weight: 600; color: #475569; margin-top: 8px;">Skor Benar: 0 / 30 Soal</div>
       </div>
 
       <div style="text-align: left; background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; font-size: 13px; margin-bottom: 20px;">
@@ -694,7 +761,11 @@ export function generateIndexHtml(config: {
         </div>
         <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
           <span style="color: #64748b;">Materi:</span>
-          <strong>Berpikir Komputasional</strong>
+          <strong>4 Pilar Berpikir Komputasional & Pengenalan Scratch</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9;">
+          <span style="color: #64748b;">Komposisi Soal:</span>
+          <strong>30 Butir (15 PG, 5 Kompleks, 5 B/S, 5 Menjodohkan)</strong>
         </div>
         <div style="display: flex; justify-content: space-between; padding: 6px 0;">
           <span style="color: #64748b;">Status Kejujuran:</span>
@@ -709,30 +780,26 @@ export function generateIndexHtml(config: {
   </div>
 
   <script>
-    // BANK SOAL
     var RAW_QUESTIONS = ${questionsJson};
     var TEACHER_EMAIL = "${config.teacherEmail}";
-    var EXAM_DURATION = ${config.examDurationMinutes} * 60; // dalam detik (3600)
+    var EXAM_DURATION = ${config.examDurationMinutes} * 60;
     var REQUIRED_PASSWORD = "${config.passwordRequired}";
 
-    // STATE UJIAN
     var studentName = "";
     var randomizedQuestions = [];
     var currentQuestionIdx = 0;
-    var userAnswers = {}; // { questionId: 'A' | 'B' | 'C' | 'D' }
+    var userAnswers = {};
     var timerInterval = null;
     var secondsLeft = EXAM_DURATION;
     var isExamActive = false;
     var cheatDetected = false;
     var cheatReason = "Bersih (Tidak Ada Kecurangan)";
 
-    // ELEMENT REFERENCES
     var inputNama = document.getElementById('input-nama');
     var inputPassword = document.getElementById('input-password');
     var loginActionContainer = document.getElementById('login-action-container');
     var btnLogin = document.getElementById('btn-login');
 
-    // LISTENER INPUT LOGIN (Tombol login hanya muncul jika password benar '1234' dan nama sudah diisi)
     function checkLoginFields() {
       var namaVal = inputNama.value.trim();
       var passVal = inputPassword.value.trim();
@@ -751,50 +818,31 @@ export function generateIndexHtml(config: {
       if (!studentName) return;
       document.getElementById('student-display-name').innerText = studentName;
       document.getElementById('header-student-name').innerText = studentName;
-      
-      // Pindah ke Halaman Petunjuk
       document.getElementById('view-login').classList.add('hidden');
       document.getElementById('view-instructions').classList.remove('hidden');
     });
 
-    // SISTEM DETEKSI SPLIT SCREEN / BELAH LAYAR
     function isSplitScreen() {
       try {
         var screenH = window.screen.availHeight || window.screen.height;
         var screenW = window.screen.availWidth || window.screen.width;
         var innerH = window.innerHeight;
         var innerW = window.innerWidth;
-
-        // Jika tinggi jendela kurang dari 62% tinggi layar perangkat -> terindikasi belah layar (split screen atas/bawah)
         var ratioH = innerH / screenH;
-        // Jika lebar jendela kurang dari 70% lebar layar -> terindikasi belah layar (split screen kiri/kanan)
         var ratioW = innerW / screenW;
-
-        if (ratioH < 0.62 || ratioW < 0.70) {
-          return true;
-        }
-      } catch (e) {
-        // Abaikan jika tidak didukung
-      }
+        if (ratioH < 0.62 || ratioW < 0.70) return true;
+      } catch (e) {}
       return false;
     }
 
-    // TOMBOL MULAI UJIAN
     document.getElementById('btn-start-exam').addEventListener('click', function() {
-      // 1. CEK APAKAH LAYAR TERBELAH SEBELUM MULAI (Ketentuan: Ketika klik mulai ujian dengan layar android/iPhone terbelah juga langsung selesai ujian)
       if (isSplitScreen()) {
         triggerCheatDisqualification("Terdeteksi Layar Terbelah (Split Screen) saat Klik Mulai Ujian");
         return;
       }
-
-      // 2. KUNCI KE FULLSCREEN
       requestFullScreenMode();
-
-      // 3. ACAK SOAL
       randomizedQuestions = shuffleArray(JSON.parse(JSON.stringify(RAW_QUESTIONS)));
       document.getElementById('header-total-num').innerText = randomizedQuestions.length;
-
-      // 4. BUKA RUANG UJIAN & MULAI TIMER
       document.getElementById('view-instructions').classList.add('hidden');
       document.getElementById('view-exam').classList.remove('hidden');
       isExamActive = true;
@@ -805,7 +853,6 @@ export function generateIndexHtml(config: {
       attachAntiCheatListeners();
     });
 
-    // FUNGSI ACAK ARRAY
     function shuffleArray(array) {
       for (var i = array.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
@@ -816,7 +863,6 @@ export function generateIndexHtml(config: {
       return array;
     }
 
-    // FULLSCREEN REQUEST
     function requestFullScreenMode() {
       var elem = document.documentElement;
       if (elem.requestFullscreen) {
@@ -828,50 +874,32 @@ export function generateIndexHtml(config: {
       }
     }
 
-    // ANTI CHEAT ENGINE
     function attachAntiCheatListeners() {
-      // Pindah tab / minimize (document.hidden)
       document.addEventListener('visibilitychange', function() {
         if (!isExamActive) return;
-        if (document.hidden) {
-          triggerCheatDisqualification("Pindah Tab / Minimize Aplikasi Saat Ujian");
-        }
+        if (document.hidden) triggerCheatDisqualification("Pindah Tab / Minimize Aplikasi Saat Ujian");
       });
-
-      // Window blur (klik aplikasi lain)
       window.addEventListener('blur', function() {
         if (!isExamActive) return;
         triggerCheatDisqualification("Pindah Jendela / Terdeteksi Membuka Aplikasi Lain");
       });
-
-      // Keluar fullscreen
       document.addEventListener('fullscreenchange', function() {
         if (!isExamActive) return;
-        if (!document.fullscreenElement) {
-          triggerCheatDisqualification("Keluar dari Mode Layar Penuh (Kecurangan)");
-        }
+        if (!document.fullscreenElement) triggerCheatDisqualification("Keluar dari Mode Layar Penuh (Kecurangan)");
       });
-
-      // Resize window (Deteksi belah layar selama ujian)
       window.addEventListener('resize', function() {
         if (!isExamActive) return;
-        if (isSplitScreen()) {
-          triggerCheatDisqualification("Terdeteksi Layar Terbelah (Split Screen) Saat Ujian Berlangsung");
-        }
+        if (isSplitScreen()) triggerCheatDisqualification("Terdeteksi Layar Terbelah (Split Screen) Saat Ujian Berlangsung");
       });
-
-      // Cegah klik kanan
       document.addEventListener('contextmenu', function(e) {
         e.preventDefault();
         return false;
       });
-
-      // Cegah shortcut keyboard (Ctrl+C, Ctrl+V, F12, dsb)
       document.addEventListener('keydown', function(e) {
         if (
-          e.keyCode === 123 || // F12
-          (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || // Ctrl+Shift+I/J
-          (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 85 || e.keyCode === 83)) // Ctrl+C, V, U, S
+          e.keyCode === 123 ||
+          (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
+          (e.ctrlKey && (e.keyCode === 67 || e.keyCode === 86 || e.keyCode === 85 || e.keyCode === 83))
         ) {
           e.preventDefault();
           return false;
@@ -879,24 +907,13 @@ export function generateIndexHtml(config: {
       });
     }
 
-    // TRIGGER DISKUALIFIKASI KECURANGAN
     function triggerCheatDisqualification(reason) {
-      if (!isExamActive && !document.getElementById('view-instructions').classList.contains('hidden')) {
-        // Terjadi saat di halaman petunjuk atau klik mulai
-        isExamActive = false;
-        cheatDetected = true;
-        cheatReason = reason;
-        finishExam();
-        return;
-      }
-      if (!isExamActive) return;
       isExamActive = false;
       cheatDetected = true;
       cheatReason = reason;
       finishExam();
     }
 
-    // TIMER 60 MENIT
     function startTimer() {
       updateTimerDisplay();
       timerInterval = setInterval(function() {
@@ -918,15 +935,11 @@ export function generateIndexHtml(config: {
       var timerTextEl = document.getElementById('timer-text');
       var timerBox = document.getElementById('timer-box');
       if (timerTextEl) timerTextEl.innerText = str;
-
-      if (secondsLeft <= 180) {
-        timerBox.className = "timer-badge danger";
-      } else if (secondsLeft <= 600) {
-        timerBox.className = "timer-badge warning";
-      }
+      if (secondsLeft <= 180) timerBox.className = "timer-badge danger";
+      else if (secondsLeft <= 600) timerBox.className = "timer-badge warning";
     }
 
-    // RENDER SOAL 1 SOAL 1 HALAMAN
+    // RENDER SOAL BERDASARKAN 4 TIPE SOAL
     function renderQuestion(idx) {
       currentQuestionIdx = idx;
       var q = randomizedQuestions[idx];
@@ -935,6 +948,12 @@ export function generateIndexHtml(config: {
       document.getElementById('header-current-num').innerText = idx + 1;
       document.getElementById('q-index-badge').innerText = (idx + 1) + " dari " + randomizedQuestions.length;
       document.getElementById('question-topic').innerText = q.topic || "Berpikir Komputasional";
+
+      var typeLabel = "Pilihan Ganda Tunggal";
+      if (q.type === 'complex') typeLabel = "Pilihan Ganda Kompleks (Bisa >1 Jawaban)";
+      else if (q.type === 'true_false') typeLabel = "Benar / Salah";
+      else if (q.type === 'matching') typeLabel = "Menjodohkan Pasangan";
+      document.getElementById('question-type-badge').innerText = typeLabel;
 
       var contextEl = document.getElementById('question-context');
       if (q.contextText) {
@@ -945,37 +964,121 @@ export function generateIndexHtml(config: {
       }
 
       document.getElementById('question-title').innerText = q.question;
-
-      // Render pilihan jawaban
       var optContainer = document.getElementById('options-container');
       optContainer.innerHTML = "";
 
-      var currentAnswer = userAnswers[q.id];
-
-      q.options.forEach(function(opt) {
-        var optDiv = document.createElement('div');
-        optDiv.className = "option-item" + (currentAnswer === opt.key ? " selected" : "");
-        optDiv.innerHTML = "<div class='option-key'>" + opt.key + "</div>" +
-                           "<div class='option-text'>" + opt.text + "</div>";
-        optDiv.addEventListener('click', function() {
-          userAnswers[q.id] = opt.key;
-          renderQuestion(idx);
-          renderPalette();
+      // 1. TIPE SINGLE CHOICE (15 SOAL)
+      if (q.type === 'single') {
+        var currentAnswer = userAnswers[q.id];
+        (q.options || []).forEach(function(opt) {
+          var optDiv = document.createElement('div');
+          optDiv.className = "option-item" + (currentAnswer === opt.key ? " selected" : "");
+          optDiv.innerHTML = "<div class='option-key'>" + opt.key + "</div>" +
+                             "<div class='option-text'>" + opt.text + "</div>";
+          optDiv.addEventListener('click', function() {
+            userAnswers[q.id] = opt.key;
+            renderQuestion(idx);
+            renderPalette();
+          });
+          optContainer.appendChild(optDiv);
         });
-        optContainer.appendChild(optDiv);
-      });
+      } 
+      // 2. TIPE COMPLEX (5 SOAL)
+      else if (q.type === 'complex') {
+        var selectedIds = userAnswers[q.id] || [];
+        (q.complexOptions || []).forEach(function(opt) {
+          var isChecked = selectedIds.indexOf(opt.id) > -1;
+          var optDiv = document.createElement('div');
+          optDiv.className = "option-item" + (isChecked ? " selected" : "");
+          optDiv.innerHTML = "<div class='option-key' style='border-radius: 6px;'>" + (isChecked ? "✓" : "") + "</div>" +
+                             "<div class='option-text'>" + opt.text + "</div>";
+          optDiv.addEventListener('click', function() {
+            var arr = userAnswers[q.id] ? userAnswers[q.id].slice() : [];
+            var pos = arr.indexOf(opt.id);
+            if (pos > -1) arr.splice(pos, 1);
+            else arr.push(opt.id);
+            userAnswers[q.id] = arr;
+            renderQuestion(idx);
+            renderPalette();
+          });
+          optContainer.appendChild(optDiv);
+        });
+      }
+      // 3. TIPE TRUE / FALSE (5 SOAL)
+      else if (q.type === 'true_false') {
+        var currentTF = userAnswers[q.id] || {};
+        var table = document.createElement('table');
+        table.className = "tf-table";
+        table.innerHTML = "<thead><tr><th style='text-align: left;'>Pernyataan</th><th style='width: 140px;'>Pilihan Jawaban</th></tr></thead>";
+        var tbody = document.createElement('tbody');
 
-      // Tombol Navigasi Sebelumnya / Berikutnya
+        (q.trueFalseItems || []).forEach(function(item) {
+          var tr = document.createElement('tr');
+          var userChoice = currentTF[item.id];
+          tr.innerHTML = "<td>" + item.statement + "</td>" +
+            "<td style='text-align: center; white-space: nowrap;'>" +
+              "<button type='button' class='tf-btn" + (userChoice === true ? " active-true" : "") + "' id='btn-t-" + item.id + "'>BENAR</button>" +
+              "<button type='button' class='tf-btn" + (userChoice === false ? " active-false" : "") + "' id='btn-f-" + item.id + "'>SALAH</button>" +
+            "</td>";
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        optContainer.appendChild(table);
+
+        (q.trueFalseItems || []).forEach(function(item) {
+          document.getElementById('btn-t-' + item.id).addEventListener('click', function() {
+            var curr = userAnswers[q.id] || {};
+            curr[item.id] = true;
+            userAnswers[q.id] = curr;
+            renderQuestion(idx);
+            renderPalette();
+          });
+          document.getElementById('btn-f-' + item.id).addEventListener('click', function() {
+            var curr = userAnswers[q.id] || {};
+            curr[item.id] = false;
+            userAnswers[q.id] = curr;
+            renderQuestion(idx);
+            renderPalette();
+          });
+        });
+      }
+      // 4. TIPE MATCHING / MENJODOHKAN (5 SOAL)
+      else if (q.type === 'matching') {
+        var currentMatches = userAnswers[q.id] || {};
+        (q.matchingPremises || []).forEach(function(premise, pIdx) {
+          var row = document.createElement('div');
+          row.className = "match-row";
+          var userMatch = currentMatches[premise.id] || "";
+          
+          var selectHtml = "<select class='match-select' id='select-match-" + premise.id + "'>" +
+                           "<option value=''>-- Pasangkan dengan pernyataan di kanan --</option>";
+          (q.matchingTargets || []).forEach(function(target) {
+            selectHtml += "<option value='" + target.id + "'" + (userMatch === target.id ? " selected" : "") + ">" + target.text + "</option>";
+          });
+          selectHtml += "</select>";
+
+          row.innerHTML = "<div style='font-size: 13px; font-weight: 700; color: #0f172a;'>(" + (pIdx + 1) + ") " + premise.premise + "</div>" + selectHtml;
+          optContainer.appendChild(row);
+        });
+
+        (q.matchingPremises || []).forEach(function(premise) {
+          var sel = document.getElementById('select-match-' + premise.id);
+          if (sel) {
+            sel.addEventListener('change', function(e) {
+              var curr = userAnswers[q.id] || {};
+              curr[premise.id] = e.target.value;
+              userAnswers[q.id] = curr;
+              renderPalette();
+            });
+          }
+        });
+      }
+
       var btnPrev = document.getElementById('btn-prev');
       var btnNext = document.getElementById('btn-next');
       var btnFinish = document.getElementById('btn-finish');
 
-      if (idx === 0) {
-        btnPrev.style.visibility = "hidden";
-      } else {
-        btnPrev.style.visibility = "visible";
-      }
-
+      btnPrev.style.visibility = idx === 0 ? "hidden" : "visible";
       if (idx === randomizedQuestions.length - 1) {
         btnNext.classList.add('hidden');
         btnFinish.classList.remove('hidden');
@@ -985,42 +1088,36 @@ export function generateIndexHtml(config: {
       }
     }
 
-    // TOMBOL PREV & NEXT
     document.getElementById('btn-prev').addEventListener('click', function() {
-      if (currentQuestionIdx > 0) {
-        renderQuestion(currentQuestionIdx - 1);
-      }
+      if (currentQuestionIdx > 0) renderQuestion(currentQuestionIdx - 1);
     });
     document.getElementById('btn-next').addEventListener('click', function() {
-      if (currentQuestionIdx < randomizedQuestions.length - 1) {
-        renderQuestion(currentQuestionIdx + 1);
-      }
+      if (currentQuestionIdx < randomizedQuestions.length - 1) renderQuestion(currentQuestionIdx + 1);
     });
     document.getElementById('btn-finish').addEventListener('click', function() {
-      var answeredCount = Object.keys(userAnswers).length;
-      var total = randomizedQuestions.length;
-      if (answeredCount < total) {
-        if (!confirm("Anda baru menjawab " + answeredCount + " dari " + total + " soal. Yakin ingin mengakhiri dan mengumpulkan ujian?")) {
-          return;
-        }
-      } else {
-        if (!confirm("Apakah Anda yakin ingin menyelesaikan dan mengumpulkan ujian sekarang?")) {
-          return;
-        }
-      }
+      if (!confirm("Apakah Anda yakin ingin menyelesaikan dan mengumpulkan seluruh 30 butir soal ujian sekarang?")) return;
       isExamActive = false;
       finishExam();
     });
 
-    // PALET NOMOR
+    function isQuestionAnswered(q) {
+      var ans = userAnswers[q.id];
+      if (!ans) return false;
+      if (q.type === 'single') return typeof ans === 'string' && ans !== '';
+      if (q.type === 'complex') return Array.isArray(ans) && ans.length > 0;
+      if (q.type === 'true_false') return typeof ans === 'object' && Object.keys(ans).length === (q.trueFalseItems || []).length;
+      if (q.type === 'matching') return typeof ans === 'object' && Object.keys(ans).length === (q.matchingPremises || []).length;
+      return false;
+    }
+
     function renderPalette() {
       var container = document.getElementById('palette-container');
       container.innerHTML = "";
       randomizedQuestions.forEach(function(q, i) {
         var btn = document.createElement('button');
-        var isAnswered = userAnswers[q.id] !== undefined;
+        var answered = isQuestionAnswered(q);
         var isActive = currentQuestionIdx === i;
-        btn.className = "palette-btn" + (isAnswered ? " answered" : "") + (isActive ? " active" : "");
+        btn.className = "palette-btn" + (answered ? " answered" : "") + (isActive ? " active" : "");
         btn.innerText = i + 1;
         btn.addEventListener('click', function() {
           renderQuestion(i);
@@ -1030,29 +1127,55 @@ export function generateIndexHtml(config: {
       });
     }
 
-    // FINISH EXAM & HITUNG NILAI
+    function checkAnswerCorrectness(q, userAns) {
+      if (!userAns) return false;
+      if (q.type === 'single') {
+        return userAns === q.correctAnswer;
+      }
+      if (q.type === 'complex') {
+        if (!Array.isArray(userAns)) return false;
+        var correct = q.correctComplexAnswers || [];
+        if (userAns.length !== correct.length) return false;
+        var sortedUser = userAns.slice().sort();
+        var sortedCorrect = correct.slice().sort();
+        return JSON.stringify(sortedUser) === JSON.stringify(sortedCorrect);
+      }
+      if (q.type === 'true_false') {
+        var items = q.trueFalseItems || [];
+        for (var i = 0; i < items.length; i++) {
+          if (userAns[items[i].id] !== items[i].correctAnswer) return false;
+        }
+        return true;
+      }
+      if (q.type === 'matching') {
+        var premises = q.matchingPremises || [];
+        for (var j = 0; j < premises.length; j++) {
+          if (userAns[premises[j].id] !== premises[j].correctMatchId) return false;
+        }
+        return true;
+      }
+      return false;
+    }
+
     function finishExam() {
       if (timerInterval) clearInterval(timerInterval);
 
-      // Hitung skor benar
       var correctCount = 0;
       var total = randomizedQuestions.length > 0 ? randomizedQuestions.length : RAW_QUESTIONS.length;
 
       RAW_QUESTIONS.forEach(function(q) {
-        if (userAnswers[q.id] === q.correctAnswer) {
+        if (checkAnswerCorrectness(q, userAnswers[q.id])) {
           correctCount++;
         }
       });
 
       var nilaiAkhir = Math.round((correctCount / total) * 100);
 
-      // Sembunyikan view ujian & tampilkan view hasil
       document.getElementById('view-login').classList.add('hidden');
       document.getElementById('view-instructions').classList.add('hidden');
       document.getElementById('view-exam').classList.add('hidden');
       document.getElementById('view-result').classList.remove('hidden');
 
-      // Tampilkan data hasil
       document.getElementById('result-student-name').innerText = studentName;
       document.getElementById('result-score').innerText = nilaiAkhir;
       document.getElementById('result-ratio').innerText = "Skor Benar: " + correctCount + " dari " + total + " Soal";
@@ -1073,7 +1196,6 @@ export function generateIndexHtml(config: {
         cheatStatusEl.style.color = "#16a34a";
       }
 
-      // Kirim data ke Google Apps Script backend
       var payload = {
         namaSiswa: studentName,
         skorBenar: correctCount,
@@ -1098,8 +1220,7 @@ export function generateIndexHtml(config: {
           })
           .simpanHasilUjian(payload);
       } else {
-        // Mode Simulator di AI Studio
-        statusMsg.innerHTML = "✅ <strong>Mode Simulasi Aktif:</strong> Nilai siswa (" + nilaiAkhir + ") siap direkam ke Google Spreadsheet & notifikasi email siap dikirimkan ke " + TEACHER_EMAIL + ".";
+        statusMsg.innerHTML = "✅ <strong>Mode Simulasi Aktif:</strong> Nilai (" + nilaiAkhir + ") siap direkam ke Google Spreadsheet & notifikasi email siap dikirimkan ke " + TEACHER_EMAIL + ".";
         statusMsg.style.background = "#dcfce7";
         statusMsg.style.color = "#166534";
       }

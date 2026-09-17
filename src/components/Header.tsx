@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, isExamR
                 </span>
               </div>
               <p className="text-xs text-slate-500">
-                Ulangan Harian: Berpikir Komputasional Kelas 7 • Google Apps Script & Sheet
+                Ulangan Harian: 4 Pilar Berpikir Komputasional & Scratch Kelas 7 • Google Apps Script & Sheet
               </p>
             </div>
           </div>
@@ -70,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, isExamR
               }`}
             >
               <BookOpen className="w-4 h-4" />
-              <span>Bank Soal (20)</span>
+              <span>Bank Soal (30)</span>
             </button>
           </nav>
         </div>

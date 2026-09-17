@@ -10,7 +10,9 @@ import {
   CheckCircle2, 
   ArrowRight,
   Sparkles,
-  Smartphone
+  Smartphone,
+  Layers,
+  BookOpen
 } from 'lucide-react';
 
 interface InstructionsViewProps {
@@ -28,7 +30,7 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({
 
   const handleStartExamClick = () => {
     // 1. Deteksi belah layar riil atau simulasi
-    // Sesuai ketentuan: "Ketika klik 'mulai ujian' dengan layar android/iPhone terbelah juga lansung selesai ujian."
+    // Sesuai ketentuan: "Ketika klik 'mulai ujian' dengan layar android/iPhone terbelah juga langsung selesai ujian."
     const screenH = window.screen.availHeight || window.screen.height;
     const screenW = window.screen.availWidth || window.screen.width;
     const innerH = window.innerHeight;
@@ -61,7 +63,7 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({
             Selamat Datang, <span className="text-blue-600">{studentName}</span>
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Ulangan Harian Mata Pelajaran INFORMATIKA • Materi Berpikir Komputasional (Kelas 7 SMP)
+            Ulangan Harian INFORMATIKA • 4 Pilar Berpikir Komputasional & Pengenalan Aplikasi Scratch (Kelas 7 SMP)
           </p>
         </div>
 
@@ -89,7 +91,7 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({
         </div>
 
         {/* Rule Badges Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3.5 mb-6">
           <div className="p-3.5 bg-slate-50 border border-slate-200/70 rounded-xl flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-blue-100/70 text-blue-700 flex items-center justify-center shrink-0">
               <Clock className="w-5 h-5" />
@@ -102,6 +104,16 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({
 
           <div className="p-3.5 bg-slate-50 border border-slate-200/70 rounded-xl flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-indigo-100/70 text-indigo-700 flex items-center justify-center shrink-0">
+              <BookOpen className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-xs text-slate-500 font-medium">Jumlah Soal</div>
+              <div className="text-sm font-bold text-slate-900">30 Butir</div>
+            </div>
+          </div>
+
+          <div className="p-3.5 bg-slate-50 border border-slate-200/70 rounded-xl flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-violet-100/70 text-violet-700 flex items-center justify-center shrink-0">
               <Shuffle className="w-5 h-5" />
             </div>
             <div>
@@ -116,7 +128,33 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({
             </div>
             <div>
               <div className="text-xs text-slate-500 font-medium">Tampilan</div>
-              <div className="text-sm font-bold text-slate-900">1 Soal 1 Halaman</div>
+              <div className="text-sm font-bold text-slate-900">1 Soal 1 Layar</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Rincian Komposisi 30 Soal */}
+        <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 mb-6">
+          <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-2">
+            <Layers className="w-4 h-4 text-blue-600" />
+            Komposisi 30 Butir Soal (Kurikulum Merdeka):
+          </h4>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+            <div className="p-2.5 bg-white rounded-lg border border-slate-200">
+              <span className="text-slate-500 block">PG Tunggal:</span>
+              <strong className="text-slate-900 text-sm">15 Soal</strong> (A, B, C, D)
+            </div>
+            <div className="p-2.5 bg-white rounded-lg border border-slate-200">
+              <span className="text-slate-500 block">PG Kompleks:</span>
+              <strong className="text-slate-900 text-sm">5 Soal</strong> (Centang &gt;1)
+            </div>
+            <div className="p-2.5 bg-white rounded-lg border border-slate-200">
+              <span className="text-slate-500 block">Benar / Salah:</span>
+              <strong className="text-slate-900 text-sm">5 Soal</strong> (Tabel B/S)
+            </div>
+            <div className="p-2.5 bg-white rounded-lg border border-slate-200">
+              <span className="text-slate-500 block">Menjodohkan:</span>
+              <strong className="text-slate-900 text-sm">5 Soal</strong> (Pasangkan)
             </div>
           </div>
         </div>
