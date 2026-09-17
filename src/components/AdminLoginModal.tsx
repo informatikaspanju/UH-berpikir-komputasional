@@ -25,7 +25,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
       setPassword('');
       onSuccess();
     } else {
-      setErrorMsg('Password Admin salah! Gunakan password resmi: spanju2026');
+      setErrorMsg('Password Admin salah! Silakan periksa kembali.');
     }
   };
 
@@ -66,7 +66,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({
 
           <div className="space-y-1.5">
             <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-              Password Admin (spanju2026)
+              Password Administrator
             </label>
             <div className="relative">
               <input

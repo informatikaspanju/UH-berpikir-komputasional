@@ -822,7 +822,7 @@ export function generateIndexHtml(config: {
 
       <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #f1f5f9; display: flex; justify-content: center; gap: 10px;">
         <button id="btn-admin-modal" style="background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">
-          🔒 Tombol Admin Guru (spanju2026)
+          🔒 Login Admin Guru
         </button>
       </div>
     </div>
@@ -1294,7 +1294,7 @@ export function generateIndexHtml(config: {
       btnAdminModal.addEventListener('click', function() {
         var pwd = prompt("Masukkan Password Admin / Guru:");
         if (pwd === "spanju2026") {
-          alert("AKUN ADMIN TERVERIFIKASI (spanju2026)\n\nRekapitulasi seluruh nilai siswa tercatat rapi secara real-time di Google Spreadsheet Anda (Sheet 1) dengan 6 kolom:\n1. Timestamp\n2. Nama Siswa (Kelas & No. Absen)\n3. Skor Benar\n4. Total Soal\n5. Nilai Akhir\n6. Status Kecurangan\n\nNotifikasi otomatis juga terkirim ke email: " + TEACHER_EMAIL);
+          alert("AKUN ADMIN TERVERIFIKASI\n\nRekapitulasi seluruh nilai siswa tercatat rapi secara real-time di Google Spreadsheet Anda (Sheet 1) dengan 6 kolom:\n1. Timestamp\n2. Nama Siswa (Kelas & No. Absen)\n3. Skor Benar\n4. Total Soal\n5. Nilai Akhir\n6. Status Kecurangan\n\nNotifikasi otomatis juga terkirim ke email: " + TEACHER_EMAIL);
         } else if (pwd !== null) {
           alert("Password Admin Salah! Hubungi guru pengampu jika Anda berhak mengakses.");
         }

@@ -370,9 +370,9 @@ export default function App() {
               <span>•</span>
               <button
                 onClick={() => setIsAdminModalOpen(true)}
-                className="text-blue-600 hover:text-blue-800 font-semibold"
+                className="text-blue-600 hover:text-blue-800 font-semibold cursor-pointer"
               >
-                Akses Admin (spanju2026)
+                Akses Admin Guru
               </button>
             </div>
           </div>

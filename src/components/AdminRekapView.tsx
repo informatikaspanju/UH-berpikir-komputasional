@@ -155,7 +155,7 @@ export const AdminRekapView: React.FC<AdminRekapViewProps> = ({
           <div className="space-y-1">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              Mode Akun Admin Terverifikasi (spanju2026)
+              Mode Akun Admin Terverifikasi
             </div>
             <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
               Rekapitulasi Nilai Keseluruhan Ujian

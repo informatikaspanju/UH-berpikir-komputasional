@@ -92,7 +92,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 onClick={onOpenAdminLogin}
                 className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold text-slate-700 hover:text-blue-700 hover:bg-blue-50 border border-slate-300 hover:border-blue-300 rounded-lg transition-all flex items-center gap-1.5 shadow-2xs"
-                title="Masuk sebagai Administrator dengan password spanju2026"
+                title="Masuk ke Panel Guru / Administrator"
               >
                 <Lock className="w-4 h-4 text-blue-600" />
                 <span>Tombol Admin</span>

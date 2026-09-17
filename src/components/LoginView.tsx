@@ -271,7 +271,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
               className="text-xs font-bold text-slate-600 hover:text-blue-700 bg-slate-100 hover:bg-blue-50 px-3.5 py-1.5 rounded-lg border border-slate-200 transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <Lock className="w-3.5 h-3.5 text-blue-600" />
-              <span>Tombol Admin Guru (spanju2026)</span>
+              <span>Login Guru / Admin</span>
             </button>
           )}
           <span className="text-[11px] text-slate-400">
