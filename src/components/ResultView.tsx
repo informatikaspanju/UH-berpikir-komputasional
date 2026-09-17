@@ -80,9 +80,15 @@ export const ResultView: React.FC<ResultViewProps> = ({
         <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mt-1 tracking-tight">
           {isCheat ? 'Ujian Selesai (Terdeteksi Pelanggaran)' : 'Ujian Telah Selesai!'}
         </h2>
-        <p className="text-xs sm:text-sm text-slate-500 mt-1">
-          Siswa: <strong className="text-slate-800">{session.studentName}</strong> • Materi Berpikir Komputasional
-        </p>
+        <div className="flex items-center justify-center gap-2 mt-2 flex-wrap text-xs sm:text-sm text-slate-600">
+          <span>Siswa: <strong className="text-slate-800">{session.studentName}</strong></span>
+          <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-bold">
+            Kelas: {session.studentClass}
+          </span>
+          <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-bold">
+            Absen: #{session.studentAttendanceNo}
+          </span>
+        </div>
 
         {/* Score Display Card */}
         <div className="my-6 p-6 bg-slate-50 rounded-2xl border border-slate-200/80 max-w-sm mx-auto">
@@ -169,7 +175,7 @@ export const ResultView: React.FC<ResultViewProps> = ({
                   {currentTimestamp}
                 </td>
                 <td className="px-3.5 py-3 font-bold text-slate-900 whitespace-nowrap">
-                  {session.studentName}
+                  {session.studentName} <span className="text-xs font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded ml-1">({session.studentClass} - #{session.studentAttendanceNo})</span>
                 </td>
                 <td className="px-3.5 py-3 text-center font-bold text-slate-800">
                   {session.correctCount}
@@ -231,7 +237,8 @@ export const ResultView: React.FC<ResultViewProps> = ({
             <p>Berikut adalah rekaman hasil ujian ulangan harian siswa:</p>
             <div className="bg-white p-3 rounded-lg border border-slate-200 space-y-1 font-mono text-[11px]">
               <div>• <strong>Nama Siswa</strong>: {session.studentName}</div>
-              <div>• <strong>Materi</strong>: Berpikir Komputasional Kelas 7 SMP</div>
+              <div>• <strong>Kelas / No. Absen</strong>: {session.studentClass} / #{session.studentAttendanceNo}</div>
+              <div>• <strong>Materi</strong>: 4 Pilar Berpikir Komputasional & Scratch (Kelas 7 SMP)</div>
               <div>• <strong>Skor Benar</strong>: {session.correctCount} / {session.totalQuestions} Soal</div>
               <div>• <strong>Nilai Akhir</strong>: <span className="text-blue-600 font-bold">{session.score} / 100</span></div>
               <div>• <strong>Status Kejujuran</strong>: <span className={isCheat ? "text-red-600 font-bold" : "text-emerald-600 font-bold"}>{session.cheatStatus}</span></div>

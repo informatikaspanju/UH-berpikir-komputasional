@@ -1,22 +1,35 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Lock, User, ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
+import { ShieldCheck, Lock, User, ArrowRight, BookOpen, Hash } from 'lucide-react';
+import { StudentIdentity } from '../types';
 
 interface LoginViewProps {
-  onLoginSuccess: (studentName: string) => void;
+  onLoginSuccess: (identity: StudentIdentity) => void;
   expectedPassword?: string;
 }
+
+const CLASS_OPTIONS = [
+  '7A', '7B', '7C', '7D', '7E', '7F', '7G', '7H'
+];
 
 export const LoginView: React.FC<LoginViewProps> = ({
   onLoginSuccess,
   expectedPassword = '1234'
 }) => {
   const [studentName, setStudentName] = useState('');
+  const [studentClass, setStudentClass] = useState('7A');
+  const [attendanceNo, setAttendanceNo] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Sesuai ketentuan prompt: "Username (Nama Siswa) dan Password (1234) baru tombol login (tidak ditampilkan)"
-  // Tombol login tersembunyi hingga username valid dan password '1234' terisi!
-  const isCriteriaMet = studentName.trim().length >= 3 && password.trim() === expectedPassword;
+  // Sesuai ketentuan:
+  // "Username (Nama Siswa) dan Password (1234) baru tombol login (tidak ditampilkan)"
+  // Tambahan: isian kelas dan nomor absen.
+  // Tombol login tersembunyi hingga seluruh identitas valid dan password '1234' terisi!
+  const isCriteriaMet = 
+    studentName.trim().length >= 3 && 
+    studentClass.trim().length > 0 &&
+    attendanceNo.trim().length > 0 &&
+    password.trim() === expectedPassword;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,16 +37,30 @@ export const LoginView: React.FC<LoginViewProps> = ({
       setErrorMessage('Silakan masukkan nama lengkap siswa.');
       return;
     }
+    if (!studentClass.trim()) {
+      setErrorMessage('Silakan pilih atau masukkan kelas.');
+      return;
+    }
+    if (!attendanceNo.trim()) {
+      setErrorMessage('Silakan masukkan nomor absen siswa.');
+      return;
+    }
     if (password !== expectedPassword) {
       setErrorMessage(`Password ujian salah! Gunakan password resmi (${expectedPassword}).`);
       return;
     }
     setErrorMessage('');
-    onLoginSuccess(studentName.trim());
+    onLoginSuccess({
+      name: studentName.trim(),
+      className: studentClass.trim(),
+      attendanceNumber: attendanceNo.trim()
+    });
   };
 
-  const handleQuickFill = (name: string) => {
+  const handleQuickFill = (name: string, cls: string, no: string) => {
     setStudentName(name);
+    setStudentClass(cls);
+    setAttendanceNo(no);
     setPassword(expectedPassword);
     setErrorMessage('');
   };
@@ -44,24 +71,25 @@ export const LoginView: React.FC<LoginViewProps> = ({
         {/* Top Decorative Header Accent */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500" />
 
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 text-blue-600 mb-3 shadow-xs">
-            <ShieldCheck className="w-7 h-7" />
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-13 h-13 rounded-2xl bg-blue-50 border border-blue-100 text-blue-600 mb-2.5 shadow-xs">
+            <ShieldCheck className="w-6 h-6" />
           </div>
-          <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 mb-2">
+          <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 mb-1.5">
             CBT Google Apps Script
           </span>
           <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
             ULANGAN HARIAN INFORMATIKA
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
-            Materi: Berpikir Komputasional • Kelas 7 SMP
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5 font-medium">
+            4 Pilar Berpikir Komputasional & Scratch • Kelas 7 SMP
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3.5">
+          {/* 1. NAMA LENGKAP SISWA */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
               Username / Nama Lengkap Siswa
             </label>
             <div className="relative">
@@ -77,15 +105,73 @@ export const LoginView: React.FC<LoginViewProps> = ({
                   setErrorMessage('');
                 }}
                 placeholder="Contoh: Muhammad Budi Santoso"
-                className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-sm bg-slate-50/50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-hidden transition-all text-slate-900 font-medium placeholder:text-slate-400"
+                className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50/50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-hidden transition-all text-slate-900 font-medium placeholder:text-slate-400"
                 autoComplete="off"
                 required
               />
             </div>
           </div>
 
+          {/* 2. ISIAN KELAS & NOMOR ABSEN */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Input Kelas */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                Kelas
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <BookOpen className="w-3.5 h-3.5" />
+                </div>
+                <select
+                  id="select-kelas"
+                  value={studentClass}
+                  onChange={(e) => {
+                    setStudentClass(e.target.value);
+                    setErrorMessage('');
+                  }}
+                  className="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-50/50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-600 outline-hidden transition-all text-slate-900 font-semibold cursor-pointer"
+                  required
+                >
+                  {CLASS_OPTIONS.map((cls) => (
+                    <option key={cls} value={cls}>
+                      Kelas {cls}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Input Nomor Absen */}
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                Nomor Absen
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <Hash className="w-3.5 h-3.5" />
+                </div>
+                <input
+                  id="input-nomor-absen"
+                  type="number"
+                  min="1"
+                  max="50"
+                  value={attendanceNo}
+                  onChange={(e) => {
+                    setAttendanceNo(e.target.value);
+                    setErrorMessage('');
+                  }}
+                  placeholder="Contoh: 12"
+                  className="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-50/50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-600 outline-hidden transition-all text-slate-900 font-semibold placeholder:text-slate-400 placeholder:font-normal"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 3. PASSWORD UJIAN (1234) */}
           <div>
-            <div className="flex justify-between items-center mb-1.5">
+            <div className="flex justify-between items-center mb-1">
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
                 Password Ujian
               </label>
@@ -106,7 +192,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
                   setErrorMessage('');
                 }}
                 placeholder="Ketik password ujian (1234)..."
-                className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-sm bg-slate-50/50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-hidden transition-all text-slate-900 font-medium placeholder:text-slate-400"
+                className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50/50 border border-slate-200 rounded-xl focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 outline-hidden transition-all text-slate-900 font-medium placeholder:text-slate-400"
                 autoComplete="current-password"
                 required
               />
@@ -114,10 +200,10 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
             {/* Hint indikator sebelum tombol login muncul */}
             {!isCriteriaMet && (
-              <div className="mt-2.5 p-2.5 bg-slate-50 rounded-lg border border-dashed border-slate-200 text-slate-500 text-xs flex items-center gap-2 animate-fade-in">
-                <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+              <div className="mt-2.5 p-2.5 bg-slate-50 rounded-lg border border-dashed border-slate-200 text-slate-500 text-xs flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
                 <span>
-                  Tombol login akan muncul otomatis saat Nama & Password (1234) valid.
+                  Tombol login akan muncul otomatis saat Nama, Kelas, No. Absen & Password (1234) telah terisi lengkap.
                 </span>
               </div>
             )}
@@ -129,7 +215,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
             </div>
           )}
 
-          {/* Tombol login: HANYA TAMPIL setelah Username & Password 1234 diisi sesuai ketentuan prompt */}
+          {/* Tombol login: HANYA TAMPIL setelah Identitas & Password 1234 diisi sesuai ketentuan */}
           {isCriteriaMet ? (
             <div className="pt-2 animate-in fade-in duration-300">
               <button
@@ -145,37 +231,37 @@ export const LoginView: React.FC<LoginViewProps> = ({
         </form>
 
         {/* Quick Test Fill for Evaluator/Teacher */}
-        <div className="mt-6 pt-5 border-t border-slate-100">
-          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-center mb-2.5">
-            Uji Cepat Cepat Akun Siswa (1-Klik):
+        <div className="mt-5 pt-4 border-t border-slate-100">
+          <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider text-center mb-2">
+            Uji Cepat Identitas Siswa (1-Klik):
           </p>
           <div className="flex flex-wrap gap-1.5 justify-center">
             <button
               type="button"
-              onClick={() => handleQuickFill('Budi Santoso')}
+              onClick={() => handleQuickFill('Muhammad Budi Santoso', '7A', '14')}
               className="text-xs px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors"
             >
-              Budi Santoso
+              Budi (7A - 14)
             </button>
             <button
               type="button"
-              onClick={() => handleQuickFill('Siti Aminah')}
+              onClick={() => handleQuickFill('Siti Nur Aminah', '7B', '28')}
               className="text-xs px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors"
             >
-              Siti Aminah
+              Siti (7B - 28)
             </button>
             <button
               type="button"
-              onClick={() => handleQuickFill('Rizky Pratama')}
+              onClick={() => handleQuickFill('Rizky Ananda Pratama', '7C', '07')}
               className="text-xs px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors"
             >
-              Rizky Pratama
+              Rizky (7C - 07)
             </button>
           </div>
         </div>
 
         {/* Footer info */}
-        <div className="mt-5 text-center text-[11px] text-slate-400">
+        <div className="mt-4 text-center text-[11px] text-slate-400">
           Sistem Pengawasan Otomatis Terkunci Layar Penuh
         </div>
       </div>

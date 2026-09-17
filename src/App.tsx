@@ -7,7 +7,7 @@ import { ResultView } from './components/ResultView';
 import { GasGeneratorView } from './components/GasGeneratorView';
 import { QuestionBankView } from './components/QuestionBankView';
 import { QUESTIONS_BANK } from './data/questions';
-import { ExamStep, ExamSession, Question, StudentAnswerValue } from './types';
+import { ExamStep, ExamSession, Question, StudentAnswerValue, StudentIdentity } from './types';
 
 export default function App() {
   // Navigation Tabs
@@ -15,7 +15,11 @@ export default function App() {
 
   // CBT Simulation State
   const [examStep, setExamStep] = useState<ExamStep>('login');
-  const [studentName, setStudentName] = useState('');
+  const [studentIdentity, setStudentIdentity] = useState<StudentIdentity>({
+    name: '',
+    className: '7A',
+    attendanceNumber: ''
+  });
   const [randomizedQuestions, setRandomizedQuestions] = useState<Question[]>([]);
   const [examSession, setExamSession] = useState<ExamSession | null>(null);
 
@@ -34,8 +38,8 @@ export default function App() {
   };
 
   // 2. Handlers for Exam Lifecycle
-  const handleLoginSuccess = (name: string) => {
-    setStudentName(name);
+  const handleLoginSuccess = (identity: StudentIdentity) => {
+    setStudentIdentity(identity);
     setExamStep('instructions');
   };
 
@@ -58,7 +62,9 @@ export default function App() {
   const handleCheatBeforeStart = (reason: string) => {
     // Siswa mencoba mulai ujian dengan layar sudah terbelah
     const session: ExamSession = {
-      studentName: studentName || 'Siswa',
+      studentName: studentIdentity.name || 'Siswa',
+      studentClass: studentIdentity.className || '7A',
+      studentAttendanceNo: studentIdentity.attendanceNumber || '-',
       startTime: Date.now(),
       endTime: Date.now(),
       remainingSeconds: 3600,
@@ -130,7 +136,9 @@ export default function App() {
     const score = Math.round((correct / total) * 100);
 
     const session: ExamSession = {
-      studentName: studentName || 'Siswa',
+      studentName: studentIdentity.name || 'Siswa',
+      studentClass: studentIdentity.className || '7A',
+      studentAttendanceNo: studentIdentity.attendanceNumber || '-',
       startTime: Date.now() - 1000 * 60 * 15,
       endTime: Date.now(),
       remainingSeconds: 0,
@@ -159,7 +167,11 @@ export default function App() {
   };
 
   const handleRestartExam = () => {
-    setStudentName('');
+    setStudentIdentity({
+      name: '',
+      className: '7A',
+      attendanceNumber: ''
+    });
     setExamSession(null);
     setRandomizedQuestions([]);
     setExamStep('login');
@@ -189,7 +201,9 @@ export default function App() {
 
             {examStep === 'instructions' && (
               <InstructionsView
-                studentName={studentName}
+                studentName={studentIdentity.name}
+                studentClass={studentIdentity.className}
+                studentAttendanceNo={studentIdentity.attendanceNumber}
                 onStartExam={handleStartExam}
                 onCheatDetectedBeforeStart={handleCheatBeforeStart}
               />
@@ -197,7 +211,9 @@ export default function App() {
 
             {examStep === 'exam' && (
               <ExamView
-                studentName={studentName}
+                studentName={studentIdentity.name}
+                studentClass={studentIdentity.className}
+                studentAttendanceNo={studentIdentity.attendanceNumber}
                 questions={randomizedQuestions}
                 onFinishExam={handleFinishExam}
                 examDurationMinutes={60}

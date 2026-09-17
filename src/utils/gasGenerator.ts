@@ -68,9 +68,15 @@ function getQuestions() {
 /**
  * Verifikasi login siswa
  */
-function verifyLogin(namaSiswa, password) {
+function verifyLogin(namaSiswa, kelas, nomorAbsen, password) {
   if (!namaSiswa || namaSiswa.trim().length < 3) {
     return { success: false, message: "Nama siswa minimal 3 karakter." };
+  }
+  if (!kelas || kelas.trim().length === 0) {
+    return { success: false, message: "Pilih kelas terlebih dahulu." };
+  }
+  if (!nomorAbsen || nomorAbsen.trim().length === 0) {
+    return { success: false, message: "Isi nomor absen terlebih dahulu." };
   }
   if (password !== CONFIG.PASSWORD_UJIAN) {
     return { success: false, message: "Password salah! Gunakan password resmi (1234)." };
@@ -78,6 +84,8 @@ function verifyLogin(namaSiswa, password) {
   return { 
     success: true, 
     namaSiswa: namaSiswa.trim(), 
+    kelas: kelas.trim(),
+    nomorAbsen: nomorAbsen.trim(),
     durasiMenit: CONFIG.DURASI_MENIT,
     totalSoal: BANK_SOAL.length 
   };
@@ -121,6 +129,9 @@ function simpanHasilUjian(data) {
 
     var timestamp = new Date();
     var namaSiswa = data.namaSiswa || "Anonim";
+    var kelas = data.kelas || "";
+    var nomorAbsen = data.nomorAbsen || "";
+    var namaTampil = namaSiswa + (kelas ? " (" + kelas + (nomorAbsen ? " - #" + nomorAbsen : "") + ")" : "");
     var skorBenar = Number(data.skorBenar) || 0;
     var totalSoal = Number(data.totalSoal) || BANK_SOAL.length;
     var nilaiAkhir = Number(data.nilaiAkhir) || Math.round((skorBenar / totalSoal) * 100);
@@ -129,7 +140,7 @@ function simpanHasilUjian(data) {
     // Append baris ke Spreadsheet
     sheet.appendRow([
       timestamp,
-      namaSiswa,
+      namaTampil,
       skorBenar,
       totalSoal,
       nilaiAkhir,
@@ -147,6 +158,8 @@ function simpanHasilUjian(data) {
     kirimEmailNotifikasi({
       timestamp: Utilities.formatDate(timestamp, "Asia/Jakarta", "dd-MM-yyyy HH:mm:ss WIB"),
       namaSiswa: namaSiswa,
+      kelas: kelas,
+      nomorAbsen: nomorAbsen,
       skorBenar: skorBenar,
       totalSoal: totalSoal,
       nilaiAkhir: nilaiAkhir,
@@ -189,6 +202,10 @@ function kirimEmailNotifikasi(data) {
       "      <tr style='border-bottom: 1px solid #f1f5f9;'>" +
       "        <td style='padding: 10px 0; font-weight: bold; width: 40%;'>Nama Siswa:</td>" +
       "        <td style='padding: 10px 0; font-size: 16px; font-weight: bold; color: #0f172a;'>" + data.namaSiswa + "</td>" +
+      "      </tr>" +
+      "      <tr style='border-bottom: 1px solid #f1f5f9;'>" +
+      "        <td style='padding: 10px 0; font-weight: bold;'>Kelas / No. Absen:</td>" +
+      "        <td style='padding: 10px 0; font-weight: bold; color: #1e40af;'>" + (data.kelas || "-") + " / #" + (data.nomorAbsen || "-") + "</td>" +
       "      </tr>" +
       "      <tr style='border-bottom: 1px solid #f1f5f9;'>" +
       "        <td style='padding: 10px 0; font-weight: bold;'>Waktu Submit:</td>" +
@@ -621,10 +638,30 @@ export function generateIndexHtml(config: {
         <input type="text" id="input-nama" class="form-control" placeholder="Ketik nama lengkap Anda..." autocomplete="off">
       </div>
 
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+        <div>
+          <label for="select-kelas" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #334155;">Kelas</label>
+          <select id="select-kelas" class="form-control">
+            <option value="7A">Kelas 7A</option>
+            <option value="7B">Kelas 7B</option>
+            <option value="7C">Kelas 7C</option>
+            <option value="7D">Kelas 7D</option>
+            <option value="7E">Kelas 7E</option>
+            <option value="7F">Kelas 7F</option>
+            <option value="7G">Kelas 7G</option>
+            <option value="7H">Kelas 7H</option>
+          </select>
+        </div>
+        <div>
+          <label for="input-absen" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #334155;">Nomor Absen</label>
+          <input type="number" id="input-absen" class="form-control" placeholder="Contoh: 12" min="1" max="50">
+        </div>
+      </div>
+
       <div class="form-group">
         <label for="input-password">Password Ujian (1234)</label>
         <input type="password" id="input-password" class="form-control" placeholder="Masukkan password ujian...">
-        <p id="password-hint" style="font-size: 11px; color: #94a3b8; margin-top: 4px;">*Tombol login akan muncul otomatis setelah password (1234) dimasukkan dengan benar.</p>
+        <p id="password-hint" style="font-size: 11px; color: #94a3b8; margin-top: 4px;">*Tombol login akan muncul otomatis setelah Nama, Kelas, No. Absen & Password (1234) diisi lengkap.</p>
       </div>
 
       <div id="login-action-container" class="hidden" style="margin-top: 20px;">
@@ -645,7 +682,10 @@ export function generateIndexHtml(config: {
       <div style="border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 20px;">
         <span class="soal-tag">Petunjuk Pelaksanaan</span>
         <h2 style="font-size: 20px; font-weight: 800; color: #0f172a;">Peraturan & Tata Tertib Ulangan Harian</h2>
-        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Halo, <strong id="student-display-name" style="color: #2563eb;">Siswa</strong>! Harap baca instruksi ini dengan seksama.</p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">
+          Halo, <strong id="student-display-name" style="color: #2563eb;">Siswa</strong>! 
+          <span id="student-display-meta" style="font-weight: 600; color: #334155; margin-left: 6px;"></span>
+        </p>
       </div>
 
       <div class="anti-cheat-banner">
@@ -786,6 +826,8 @@ export function generateIndexHtml(config: {
     var REQUIRED_PASSWORD = "${config.passwordRequired}";
 
     var studentName = "";
+    var studentClass = "7A";
+    var studentAbsen = "";
     var randomizedQuestions = [];
     var currentQuestionIdx = 0;
     var userAnswers = {};
@@ -796,14 +838,18 @@ export function generateIndexHtml(config: {
     var cheatReason = "Bersih (Tidak Ada Kecurangan)";
 
     var inputNama = document.getElementById('input-nama');
+    var selectKelas = document.getElementById('select-kelas');
+    var inputAbsen = document.getElementById('input-absen');
     var inputPassword = document.getElementById('input-password');
     var loginActionContainer = document.getElementById('login-action-container');
     var btnLogin = document.getElementById('btn-login');
 
     function checkLoginFields() {
       var namaVal = inputNama.value.trim();
+      var kelasVal = selectKelas ? selectKelas.value.trim() : "";
+      var absenVal = inputAbsen ? inputAbsen.value.trim() : "";
       var passVal = inputPassword.value.trim();
-      if (passVal === REQUIRED_PASSWORD && namaVal.length >= 3) {
+      if (passVal === REQUIRED_PASSWORD && namaVal.length >= 3 && kelasVal.length > 0 && absenVal.length > 0) {
         loginActionContainer.classList.remove('hidden');
       } else {
         loginActionContainer.classList.add('hidden');
@@ -811,13 +857,19 @@ export function generateIndexHtml(config: {
     }
 
     inputNama.addEventListener('input', checkLoginFields);
+    if (selectKelas) selectKelas.addEventListener('change', checkLoginFields);
+    if (inputAbsen) inputAbsen.addEventListener('input', checkLoginFields);
     inputPassword.addEventListener('input', checkLoginFields);
 
     btnLogin.addEventListener('click', function() {
       studentName = inputNama.value.trim();
-      if (!studentName) return;
+      studentClass = selectKelas ? selectKelas.value.trim() : "7A";
+      studentAbsen = inputAbsen ? inputAbsen.value.trim() : "-";
+      if (!studentName || !studentClass || !studentAbsen) return;
       document.getElementById('student-display-name').innerText = studentName;
-      document.getElementById('header-student-name').innerText = studentName;
+      var metaEl = document.getElementById('student-display-meta');
+      if (metaEl) metaEl.innerText = "• Kelas: " + studentClass + " • No. Absen: #" + studentAbsen;
+      document.getElementById('header-student-name').innerText = studentName + " (" + studentClass + " - #" + studentAbsen + ")";
       document.getElementById('view-login').classList.add('hidden');
       document.getElementById('view-instructions').classList.remove('hidden');
     });
@@ -1176,7 +1228,7 @@ export function generateIndexHtml(config: {
       document.getElementById('view-exam').classList.add('hidden');
       document.getElementById('view-result').classList.remove('hidden');
 
-      document.getElementById('result-student-name').innerText = studentName;
+      document.getElementById('result-student-name').innerText = studentName + " (" + studentClass + " - #" + studentAbsen + ")";
       document.getElementById('result-score').innerText = nilaiAkhir;
       document.getElementById('result-ratio').innerText = "Skor Benar: " + correctCount + " dari " + total + " Soal";
 
@@ -1198,6 +1250,8 @@ export function generateIndexHtml(config: {
 
       var payload = {
         namaSiswa: studentName,
+        kelas: studentClass,
+        nomorAbsen: studentAbsen,
         skorBenar: correctCount,
         totalSoal: total,
         nilaiAkhir: nilaiAkhir,

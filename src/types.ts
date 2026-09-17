@@ -62,8 +62,16 @@ export type StudentAnswerValue =
 
 export type ExamStep = 'login' | 'instructions' | 'exam' | 'result';
 
+export interface StudentIdentity {
+  name: string;
+  className: string;
+  attendanceNumber: string;
+}
+
 export interface ExamSession {
   studentName: string;
+  studentClass: string;
+  studentAttendanceNo: string;
   startTime: number | null;
   endTime: number | null;
   remainingSeconds: number;

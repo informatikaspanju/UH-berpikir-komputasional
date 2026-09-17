@@ -18,6 +18,8 @@ import {
 
 interface ExamViewProps {
   studentName: string;
+  studentClass?: string;
+  studentAttendanceNo?: string;
   questions: Question[];
   onFinishExam: (answers: Record<number, StudentAnswerValue>, cheatStatus: string) => void;
   examDurationMinutes?: number;
@@ -25,6 +27,8 @@ interface ExamViewProps {
 
 export const ExamView: React.FC<ExamViewProps> = ({
   studentName,
+  studentClass = '7A',
+  studentAttendanceNo = '-',
   questions,
   onFinishExam,
   examDurationMinutes = 60
@@ -239,8 +243,12 @@ export const ExamView: React.FC<ExamViewProps> = ({
               <h1 className="text-xs sm:text-sm font-extrabold text-slate-900 tracking-tight leading-tight">
                 ULANGAN HARIAN INFORMATIKA KELAS 7
               </h1>
-              <p className="text-[11px] sm:text-xs text-slate-500 font-medium truncate max-w-[200px] sm:max-w-none">
-                Siswa: <span className="font-bold text-slate-800">{studentName}</span> • 30 Soal
+              <p className="text-[11px] sm:text-xs text-slate-500 font-medium truncate max-w-[240px] sm:max-w-none flex items-center gap-1.5 flex-wrap">
+                <span>Siswa: <strong className="text-slate-800">{studentName}</strong></span>
+                <span className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-bold">
+                  {studentClass} - Absen #{studentAttendanceNo}
+                </span>
+                <span>• 30 Soal</span>
               </p>
             </div>
           </div>

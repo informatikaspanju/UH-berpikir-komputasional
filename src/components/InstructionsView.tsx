@@ -12,17 +12,22 @@ import {
   Sparkles,
   Smartphone,
   Layers,
-  BookOpen
+  BookOpen,
+  UserCheck
 } from 'lucide-react';
 
 interface InstructionsViewProps {
   studentName: string;
+  studentClass?: string;
+  studentAttendanceNo?: string;
   onStartExam: () => void;
   onCheatDetectedBeforeStart: (reason: string) => void;
 }
 
 export const InstructionsView: React.FC<InstructionsViewProps> = ({
   studentName,
+  studentClass = '7A',
+  studentAttendanceNo = '-',
   onStartExam,
   onCheatDetectedBeforeStart
 }) => {
@@ -62,9 +67,21 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
             Selamat Datang, <span className="text-blue-600">{studentName}</span>
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Ulangan Harian INFORMATIKA • 4 Pilar Berpikir Komputasional & Pengenalan Aplikasi Scratch (Kelas 7 SMP)
-          </p>
+          
+          {/* Identitas Lengkap Siswa */}
+          <div className="flex items-center gap-2 mt-2 flex-wrap text-xs sm:text-sm text-slate-600">
+            <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg font-bold border border-blue-100">
+              <UserCheck className="w-3.5 h-3.5" />
+              Kelas: {studentClass}
+            </span>
+            <span className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-lg font-bold border border-indigo-100">
+              No. Absen: #{studentAttendanceNo}
+            </span>
+            <span className="text-slate-400">•</span>
+            <span className="text-slate-500 font-medium">
+              Ulangan Harian INFORMATIKA Kelas 7 SMP
+            </span>
+          </div>
         </div>
 
         {/* Anti-Cheat Critical Warning Banner */}
